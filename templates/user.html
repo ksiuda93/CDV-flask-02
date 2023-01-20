@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Page</title>
+</head>
+<body>
+  <h1>Hello {{ user_id }}</h1>
+   {% for comment in comments %}
+    <p> {{ comment }}</p>
+    {% endfor %}
+</body>
+</html>
