@@ -1,4 +1,4 @@
-from . import db, exc, ma
+from . import db, exc, ma, bc
 
 
 class User(db.Model):
@@ -8,14 +8,11 @@ class User(db.Model):
     email = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(256), nullable=True)
-    lang = db.Column(db.String(256), nullable=True)
-    version = db.Column(db.String(256), nullable=True)
-    mobile_version = db.Column(db.String(256), nullable=True)
 
     def __init__(self, username, email, password, role):
         self.username = username
         self.email = email
-        self.password = password
+        self.password = bc.generate_password_hash(password)
         self.role = role
 
     def __repr__(self):

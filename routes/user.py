@@ -1,24 +1,18 @@
 from . import Blueprint, jsonify, request
 from models.User import User, UserSchema
+from flask_jwt import jwt_required, current_identity
 
 user_bp = Blueprint('user', __name__)
 users = []
 
 
-@user_bp.get('/user/<int:user_id>')
-def get_user(user_id):
-    user = User.query.get(user_id)
-    if user is not None:
-        return jsonify(UserSchema().dump(user))
-    else:
-        return jsonify(
-            {
-                "ERROR": "User does not exist!"
-            }
-        ), 404
-
+@user_bp.get('/user')
+@jwt_required()
+def get_user():
+    return jsonify(UserSchema().dump(current_identity))
 
 @user_bp.get('/users')
+@jwt_required()
 def get_all_user():
     return jsonify(UserSchema(many=True).dump(User.query.all()))
 
@@ -36,19 +30,12 @@ def add_user():
         ), 404
 
 
-#int, float, any, uuid
-@user_bp.delete('/user/<int:user_id>')
-def delete_user(user_id):
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify(
-            {
-                "ERROR": "User does not exist!"
-            }
-        ), 404
-    if user.delete_user():
+@user_bp.delete('/user')
+@jwt_required()
+def delete_user():
+    if current_identity.delete_user():
         return jsonify({
-            "INFO": f"User {user_id} deleted!"
+            "INFO": f"User {current_identity.id} deleted!"
         })
     else:
         return jsonify(
